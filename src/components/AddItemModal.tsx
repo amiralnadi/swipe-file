@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Link2, Image, Tag, FolderOpen, AlignLeft, Sparkles } from "lucide-react";
 import type { Folder } from "@/lib/types";
@@ -30,6 +30,12 @@ export default function AddItemModal({ isOpen, onClose, onSubmit, folders }: Add
   const [category, setCategory] = useState("");
   const [tagsInput, setTagsInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!folder && folders.length > 0) {
+      setFolder(folders[0].name);
+    }
+  }, [folders, folder]);
 
   const selectedFolder = folders.find((f) => f.name === folder);
   const existingCategories = selectedFolder?.categories || [];
