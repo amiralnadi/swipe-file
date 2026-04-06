@@ -14,11 +14,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, account }) {
+    async jwt({ token, account, profile }) {
       // Persist the GitHub access token on first sign-in
       if (account) {
         token.accessToken = account.access_token;
-        token.githubUsername = account.providerAccountId;
+        token.githubUsername = (profile as { login?: string })?.login ?? account.providerAccountId;
       }
       return token;
     },
