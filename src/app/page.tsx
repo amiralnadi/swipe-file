@@ -200,7 +200,7 @@ export default function Home() {
 
             {/* Sign out */}
             <button
-              onClick={() => signOut()}
+              onClick={() => signOut({ callbackUrl: "/login" })}
               className="p-2 rounded-lg hover:bg-stone-100 transition-colors cursor-pointer"
               title="Sign out"
             >
