@@ -1,27 +1,28 @@
 import type { GitHubFile } from "./types";
 import { auth } from "./auth";
+import { getInstallationId, getInstallationToken } from "./github-app";
 
 /**
- * Get the current user's GitHub token and username from the session.
- * Returns null if not authenticated.
+ * Get the current user's GitHub username and a scoped installation token.
+ * Returns null if not authenticated or app not installed.
  */
 export async function getUserContext(): Promise<{ token: string; owner: string } | null> {
   const session = await auth();
-  if (!session?.accessToken || !session?.githubUsername) return null;
-  return { token: session.accessToken, owner: session.githubUsername };
+  if (!session?.githubUsername) return null;
+
+  const installationId = await getInstallationId(session.githubUsername);
+  if (!installationId) return null;
+
+  const token = await getInstallationToken(installationId);
+  return { token, owner: session.githubUsername };
 }
 
-/**
- * Read all MD files. Uses GitHub API with user's token if authenticated,
- * falls back to local filesystem for unauthenticated/dev mode.
- */
 export async function getAllFiles(): Promise<GitHubFile[]> {
   const ctx = await getUserContext();
   if (ctx) {
     const { readAllMarkdownFiles } = await import("./github");
     return readAllMarkdownFiles(ctx.token, ctx.owner);
   }
-  // Fallback: local files for dev/unauthenticated
   const { readLocalMarkdownFiles } = await import("./local-data");
   return readLocalMarkdownFiles();
 }

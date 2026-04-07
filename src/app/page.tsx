@@ -16,7 +16,7 @@ import CardModal from "@/components/CardModal";
 import Skeleton from "@/components/Skeleton";
 
 export default function Home() {
-  const { isLoading: isOnboarding, isReady, isUnauthenticated } = useOnboard();
+  const { isLoading, isReady, isNotInstalled, isNeedsRepo } = useOnboard();
   const { items, folders, isLoading, mutate } = useItems();
 
   const [activeFolder, setActiveFolder] = useState<string | null>(null);
@@ -103,8 +103,7 @@ export default function Home() {
     setVisibleCount(12);
   }, []);
 
-  // Onboarding: checking/creating repo
-  if (isOnboarding) {
+  if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen gap-4">
         <motion.div
@@ -113,6 +112,56 @@ export default function Home() {
           transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }}
         />
         <p className="text-sm text-muted-foreground">Setting up your swipe file...</p>
+      </div>
+    );
+  }
+
+  if (isNotInstalled) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen gap-6 px-4">
+        <div className="text-center max-w-md">
+          <h2 className="font-display text-2xl italic mb-2">One more step</h2>
+          <p className="text-sm text-muted-foreground mb-6">
+            Install the MySwipe.cc app on GitHub to connect your swipe file.
+            You can limit access to just one repository.
+          </p>
+          <a
+            href={`https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_SLUG}/installations/new`}
+            className="inline-block px-6 py-3 bg-foreground text-background rounded-xl text-sm font-semibold hover:bg-stone-800 transition-colors"
+          >
+            Install on GitHub
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  if (isNeedsRepo) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen gap-6 px-4">
+        <div className="text-center max-w-md">
+          <h2 className="font-display text-2xl italic mb-2">Create your swipe file repo</h2>
+          <p className="text-sm text-muted-foreground mb-6">
+            Create a repository named <code className="bg-stone-100 px-1.5 py-0.5 rounded text-xs font-mono">swipe-file</code> on GitHub,
+            then grant the app access to it.
+          </p>
+          <div className="flex gap-3 justify-center">
+            <a
+              href="https://github.com/new?name=swipe-file"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block px-6 py-3 bg-foreground text-background rounded-xl text-sm font-semibold hover:bg-stone-800 transition-colors"
+            >
+              Create repo on GitHub
+            </a>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-6 py-3 border border-border rounded-xl text-sm font-medium hover:bg-stone-50 transition-colors"
+            >
+              Done, refresh
+            </button>
+          </div>
+        </div>
       </div>
     );
   }

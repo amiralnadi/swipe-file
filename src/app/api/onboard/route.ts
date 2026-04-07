@@ -1,26 +1,28 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { repoExists, createRepo, getUsername } from "@/lib/github";
+import { getInstallationId, getInstallationToken } from "@/lib/github-app";
+import { repoExists } from "@/lib/github";
 
 export async function POST() {
   try {
     const session = await auth();
-    if (!session?.accessToken) {
+    if (!session?.githubUsername) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
-    const token = session.accessToken;
-    const owner = await getUsername(token);
-
-    // Check if repo already exists
-    const exists = await repoExists(token, owner);
-    if (exists) {
-      return NextResponse.json({ status: "ready", owner });
+    const installationId = await getInstallationId(session.githubUsername);
+    if (!installationId) {
+      return NextResponse.json({ status: "not_installed" });
     }
 
-    // Create repo and seed it
-    await createRepo(token);
-    return NextResponse.json({ status: "created", owner });
+    const token = await getInstallationToken(installationId);
+    const exists = await repoExists(token, session.githubUsername);
+
+    if (exists) {
+      return NextResponse.json({ status: "ready" });
+    }
+
+    return NextResponse.json({ status: "needs_repo" });
   } catch (error) {
     console.error("Onboarding failed:", error);
     return NextResponse.json({ error: "Onboarding failed" }, { status: 500 });
