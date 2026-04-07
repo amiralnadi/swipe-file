@@ -17,7 +17,7 @@ import Skeleton from "@/components/Skeleton";
 
 export default function Home() {
   const { isLoading, isReady, isNotInstalled, isNeedsRepo } = useOnboard();
-  const { items, folders, isLoading, mutate } = useItems();
+  const { items, folders, isLoading: itemsLoading, mutate } = useItems();
 
   const [activeFolder, setActiveFolder] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -260,7 +260,7 @@ export default function Home() {
 
         {/* Board */}
         <div className="p-6">
-          {isLoading ? (
+          {itemsLoading ? (
             <Skeleton />
           ) : (
             <>
