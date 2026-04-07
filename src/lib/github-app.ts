@@ -2,7 +2,11 @@ import { createAppAuth } from "@octokit/auth-app";
 import { Octokit } from "octokit";
 
 function parsePrivateKey(key: string): string {
-  // Netlify stores multiline env vars with literal \n — unescape them
+  // If stored as base64 (no PEM header present), decode it first
+  if (!key.includes("-----")) {
+    return Buffer.from(key, "base64").toString("utf8");
+  }
+  // Otherwise handle literal \n sequences
   return key.replace(/\\n/g, "\n");
 }
 
