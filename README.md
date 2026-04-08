@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# myswipe.cc
 
-## Getting Started
+A personal swipe file app — save references, examples, and inspiration as Markdown files in your own GitHub repo.
 
-First, run the development server:
+## What is a swipe file?
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+A swipe file is a curated collection of things worth keeping: great copy, design patterns, useful frameworks, articles, screenshots. Instead of bookmarking and forgetting, you build a searchable library you actually use.
+
+## Why Markdown + GitHub?
+
+Your items are plain Markdown files in your own GitHub repo. This means your AI tools (Claude, Cursor, Copilot) can read them natively — no integrations, no exports. Point your AI at the repo and it has access to your entire reference library.
+
+This turns your swipe file into a **personalized knowledge base** your AI can draw from when you're writing copy, designing, or building. Instead of getting generic outputs, your AI has your specific references, examples, and standards to work from. The more you save, the more useful it becomes.
+
+## How it works
+
+1. Fork the [swipe-file-data](https://github.com/amiralnadi/swipe-file-data) template repo
+2. Sign in at [myswipe.cc](https://myswipe.cc) with GitHub and grant access to your fork
+3. Your items are stored as Markdown files in your repo — you own them completely
+
+## Adding items
+
+**Web app** — click the + button at myswipe.cc
+
+**Claude Code** — use the `/myswipe add [url or note]` skill. Claude fetches the page and fills in the card automatically.
+
+**Directly** — edit the Markdown files in your `data/` folder via any editor, Claude, or Cursor
+
+## Tech stack
+
+- Next.js 16 (App Router) + TypeScript
+- TailwindCSS v4 + Framer Motion
+- NextAuth v5 with GitHub App authentication
+- Data layer: Markdown files in each user's own GitHub repo
+- Deployed on Netlify
+
+## Data format
+
+Items live in `data/*.md` files. Each file is a folder, each `##` heading is a category, each `###` heading is an item:
+
+```markdown
+---
+folder: Design
+description: Design references and inspiration
+---
+
+## UI Patterns
+
+### Stripe's pricing page
+- Link: https://stripe.com/pricing
+- Tags: pricing, saas, conversion
+- Description: Clean comparison table with clear hierarchy
+- When to use: When designing SaaS pricing
+- Added: 2024-01-01
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

@@ -2,12 +2,44 @@
 
 import { signIn } from "next-auth/react";
 import { motion } from "framer-motion";
-import { ArrowRight, Github } from "lucide-react";
+import { ArrowRight, Github, GitFork, Plug, Bot } from "lucide-react";
+
+const steps = [
+  {
+    icon: GitFork,
+    title: "Fork the template repo",
+    description: (
+      <>
+        Go to{" "}
+        <a
+          href="https://github.com/amiralnadi/swipe-file-data"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline underline-offset-2 hover:text-foreground transition-colors"
+        >
+          github.com/amiralnadi/swipe-file-data
+        </a>{" "}
+        and click Fork. This creates your own copy of the data repo.
+      </>
+    ),
+  },
+  {
+    icon: Plug,
+    title: "Connect GitHub",
+    description:
+      "Sign in below and grant access to your forked repo. Your items are stored as Markdown files — you own them completely.",
+  },
+  {
+    icon: Bot,
+    title: "Connect your AI (optional)",
+    description:
+      "Point Claude, Cursor, or any AI tool at your repo. It can read your swipe file natively as a knowledge base — no integrations needed.",
+  },
+];
 
 export default function LoginPage() {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background">
-      {/* Subtle dot pattern */}
+    <div className="flex items-center justify-center min-h-screen bg-background px-6">
       <div
         className="fixed inset-0 opacity-[0.02]"
         style={{
@@ -17,54 +49,71 @@ export default function LoginPage() {
       />
 
       <motion.div
-        className="relative text-center px-6"
+        className="relative w-full max-w-md"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
       >
-        {/* Logo */}
+        {/* Logo + heading */}
+        <div className="text-center mb-10">
+          <motion.div
+            className="w-14 h-14 mx-auto mb-6 rounded-2xl bg-foreground flex items-center justify-center"
+            initial={{ scale: 0, rotate: -180 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ delay: 0.2, type: "spring", damping: 15 }}
+          >
+            <span className="text-background font-display text-2xl italic">S</span>
+          </motion.div>
+          <h1 className="font-display text-4xl italic mb-2 tracking-tight">Swipe File</h1>
+          <p className="text-muted-foreground text-sm max-w-sm mx-auto leading-relaxed">
+            Your personal reference library — saved as Markdown, readable by AI, owned by you.
+          </p>
+        </div>
+
+        {/* Steps */}
         <motion.div
-          className="w-14 h-14 mx-auto mb-6 rounded-2xl bg-foreground flex items-center justify-center"
-          initial={{ scale: 0, rotate: -180 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ delay: 0.2, type: "spring", damping: 15 }}
-        >
-          <span className="text-background font-display text-2xl italic">S</span>
-        </motion.div>
-
-        <h1 className="font-display text-5xl italic mb-3 tracking-tight">Swipe File</h1>
-        <p className="text-muted-foreground text-sm mb-10 max-w-[300px] mx-auto leading-relaxed">
-          Your personal moodboard for saving references, examples, and inspiration. One click to start.
-        </p>
-
-        <motion.button
-          onClick={() => signIn("github", { callbackUrl: "/" })}
-          className="inline-flex items-center gap-3 px-7 py-3.5 bg-foreground text-background rounded-2xl
-            font-semibold text-sm hover:bg-stone-800 transition-all duration-200 cursor-pointer
-            shadow-lg hover:shadow-xl group"
-          whileHover={{ scale: 1.02, y: -1 }}
-          whileTap={{ scale: 0.98 }}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-        >
-          <Github className="w-5 h-5" />
-          Continue with GitHub
-          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-        </motion.button>
-
-        <motion.div
-          className="mt-8 max-w-[260px] mx-auto space-y-2"
+          className="space-y-4 mb-8"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
+          transition={{ delay: 0.3 }}
         >
-          <p className="text-[11px] text-muted leading-relaxed">
-            We'll create a <code className="bg-stone-100 px-1 py-0.5 rounded text-[10px]">swipe-file</code> repo
-            in your GitHub to store your items. You own your data.
-          </p>
-          <p className="text-[11px] text-muted">
-            Also works with Claude Code — edit the files directly.
+          {steps.map((step, i) => (
+            <div key={i} className="flex gap-4 items-start bg-surface border border-border rounded-xl p-4">
+              <div className="w-8 h-8 rounded-lg bg-stone-100 flex items-center justify-center shrink-0 mt-0.5">
+                <step.icon className="w-4 h-4 text-stone-600" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[10px] font-semibold text-muted uppercase tracking-wider">Step {i + 1}</span>
+                </div>
+                <p className="text-sm font-medium text-foreground mb-0.5">{step.title}</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">{step.description}</p>
+              </div>
+            </div>
+          ))}
+        </motion.div>
+
+        {/* Sign in button */}
+        <motion.div
+          className="text-center"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+        >
+          <motion.button
+            onClick={() => signIn("github", { callbackUrl: "/" })}
+            className="inline-flex items-center gap-3 px-7 py-3.5 bg-foreground text-background rounded-2xl
+              font-semibold text-sm hover:bg-stone-800 transition-all duration-200 cursor-pointer
+              shadow-lg hover:shadow-xl group w-full justify-center"
+            whileHover={{ scale: 1.01, y: -1 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <Github className="w-5 h-5" />
+            Continue with GitHub
+            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+          </motion.button>
+          <p className="text-[11px] text-muted mt-3">
+            Only accesses the repo you select — nothing else.
           </p>
         </motion.div>
       </motion.div>
