@@ -33,7 +33,7 @@ const steps = [
     icon: Bot,
     title: "Connect your AI",
     description:
-      "Point Claude or Cursor at your repo and install the /myswipe skill. Use /myswipe add [url] to save items instantly — AI fills in the card for you. Use /myswipe check to surface relevant references while you work.",
+      "Install the /myswipe skill in Claude Code. Run /myswipe setup, paste your API key from myswipe.cc/settings, and you're done. Then use /myswipe add [url] to save items — AI fills the card. Use /myswipe check to surface relevant references while you work.",
   },
 ];
 

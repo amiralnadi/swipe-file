@@ -22,9 +22,20 @@ This turns your swipe file into a **personalized knowledge base** your AI can dr
 
 **Web app** — click the + button at myswipe.cc
 
-**Claude Code** — use the `/myswipe add [url or note]` skill. Claude fetches the page and fills in the card automatically.
+**Claude Code skill** — install the `/myswipe` skill, then:
+1. Run `/myswipe setup` — paste your API key from myswipe.cc/settings
+2. Use `/myswipe add [url]` to save any link — AI fetches the page and fills in the card automatically
+3. Use `/myswipe check` — AI scans your library and surfaces relevant references for what you're currently working on
 
 **Directly** — edit the Markdown files in your `data/` folder via any editor, Claude, or Cursor
+
+## Installing the /myswipe skill
+
+```bash
+mkdir -p ~/.claude/skills/myswipe && curl -s https://raw.githubusercontent.com/amiralnadi/swipe-file/main/skill.md -o ~/.claude/skills/myswipe/skill.md
+```
+
+Then run `/myswipe setup` in Claude Code and paste your API key from myswipe.cc/settings.
 
 ## Tech stack
 
