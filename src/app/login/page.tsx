@@ -12,14 +12,14 @@ const steps = [
       <>
         Go to{" "}
         <a
-          href="https://github.com/amiralnadi/swipe-file-data"
+          href="https://github.com/amiralnadi/my-swipe-file"
           target="_blank"
           rel="noopener noreferrer"
           className="underline underline-offset-2 hover:text-foreground transition-colors"
         >
-          github.com/amiralnadi/swipe-file-data
+          github.com/amiralnadi/my-swipe-file
         </a>{" "}
-        and click Fork. This creates your own copy of the data repo.
+        and click Fork. This creates your own copy where your items will live.
       </>
     ),
   },
@@ -31,9 +31,9 @@ const steps = [
   },
   {
     icon: Bot,
-    title: "Connect your AI (optional)",
+    title: "Connect your AI",
     description:
-      "Point Claude, Cursor, or any AI tool at your repo. It can read your swipe file natively as a knowledge base — no integrations needed.",
+      "Point Claude or Cursor at your repo and install the /myswipe skill. Use /myswipe add [url] to save items instantly — AI fills in the card for you. Use /myswipe check to surface relevant references while you work.",
   },
 ];
 
@@ -66,7 +66,7 @@ export default function LoginPage() {
           </motion.div>
           <h1 className="font-display text-4xl italic mb-2 tracking-tight">Swipe File</h1>
           <p className="text-muted-foreground text-sm max-w-sm mx-auto leading-relaxed">
-            Your personal reference library — saved as Markdown, readable by AI, owned by you.
+            A collection of things you find valuable and want to reference later: great copy, design examples, useful frameworks, interesting articles. Instead of forgetting them in browser bookmarks, you build a searchable library you actually use in your work.
           </p>
         </div>
 

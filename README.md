@@ -14,7 +14,7 @@ This turns your swipe file into a **personalized knowledge base** your AI can dr
 
 ## How it works
 
-1. Fork the [swipe-file-data](https://github.com/amiralnadi/swipe-file-data) template repo
+1. Fork the [my-swipe-file](https://github.com/amiralnadi/my-swipe-file) template repo
 2. Sign in at [myswipe.cc](https://myswipe.cc) with GitHub and grant access to your fork
 3. Your items are stored as Markdown files in your repo — you own them completely
 
