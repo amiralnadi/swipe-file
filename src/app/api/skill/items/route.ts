@@ -1,27 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
+import { verifyApiKey } from "@/lib/api-key";
 import { getInstallationId, getInstallationToken } from "@/lib/github-app";
 import { readAllMarkdownFiles } from "@/lib/github";
 import { parseSwipeMarkdown } from "@/lib/markdown";
 
-async function verifyGithubToken(token: string): Promise<string | null> {
-  const res = await fetch("https://api.github.com/user", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: "application/vnd.github+json",
-    },
-  });
-  if (!res.ok) return null;
-  const data = await res.json();
-  return data.login ?? null;
-}
-
 export async function GET(request: NextRequest) {
   try {
-    const token = request.headers.get("authorization")?.replace("Bearer ", "");
-    if (!token) return NextResponse.json({ error: "Missing token" }, { status: 401 });
+    const apiKey = request.headers.get("authorization")?.replace("Bearer ", "");
+    if (!apiKey) return NextResponse.json({ error: "Missing API key" }, { status: 401 });
 
-    const username = await verifyGithubToken(token);
-    if (!username) return NextResponse.json({ error: "Invalid GitHub token" }, { status: 401 });
+    const username = verifyApiKey(apiKey);
+    if (!username) return NextResponse.json({ error: "Invalid API key" }, { status: 401 });
 
     const installationId = await getInstallationId(username);
     if (!installationId) {

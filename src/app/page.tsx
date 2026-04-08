@@ -3,7 +3,8 @@
 import { useState, useMemo, useCallback } from "react";
 import { signOut } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Filter, LogOut, Github } from "lucide-react";
+import { Menu, X, Filter, LogOut, Settings } from "lucide-react";
+import Link from "next/link";
 import { useItems, addItem, deleteItem } from "@/hooks/useItems";
 import { useOnboard } from "@/hooks/useOnboard";
 import type { SwipeItem } from "@/lib/types";
@@ -246,6 +247,15 @@ export default function Home() {
             <span className="text-[11px] text-muted-foreground tabular-nums font-medium">
               {allFiltered.length} item{allFiltered.length !== 1 ? "s" : ""}
             </span>
+
+            {/* Settings */}
+            <Link
+              href="/settings"
+              className="p-2 rounded-lg hover:bg-stone-100 transition-colors cursor-pointer"
+              title="Settings"
+            >
+              <Settings className="w-4 h-4 text-muted-foreground" />
+            </Link>
 
             {/* Sign out */}
             <button

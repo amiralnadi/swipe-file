@@ -1,33 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
+import { verifyApiKey } from "@/lib/api-key";
 import { getInstallationId, getInstallationToken } from "@/lib/github-app";
 import { readMarkdownFile, writeMarkdownFile } from "@/lib/github";
 import { parseSwipeMarkdown, serializeSwipeMarkdown, addItemToMarkdown } from "@/lib/markdown";
 
-async function verifyGithubToken(token: string): Promise<string | null> {
-  const res = await fetch("https://api.github.com/user", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: "application/vnd.github+json",
-    },
-  });
-  if (!res.ok) return null;
-  const data = await res.json();
-  return data.login ?? null;
-}
-
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { token, folder, category, title, link, tags, description, why_saving, when_to_use } = body;
+    const { apiKey, folder, category, title, link, tags, description, why_saving, when_to_use } = body;
 
-    if (!token) return NextResponse.json({ error: "Missing token" }, { status: 401 });
+    if (!apiKey) return NextResponse.json({ error: "Missing apiKey" }, { status: 401 });
     if (!folder || !title) return NextResponse.json({ error: "folder and title are required" }, { status: 400 });
 
-    // Verify GitHub token and get username
-    const username = await verifyGithubToken(token);
-    if (!username) return NextResponse.json({ error: "Invalid GitHub token" }, { status: 401 });
+    const username = verifyApiKey(apiKey);
+    if (!username) return NextResponse.json({ error: "Invalid API key" }, { status: 401 });
 
-    // Get installation token (proves app is installed on their repo)
     const installationId = await getInstallationId(username);
     if (!installationId) {
       return NextResponse.json({
@@ -47,7 +34,11 @@ export async function POST(request: NextRequest) {
       parsed = { folder, description: `${folder} references`, items: [] };
     }
 
-    const fullDescription = [description, why_saving ? `Why saving: ${why_saving}` : "", when_to_use ? `When to use: ${when_to_use}` : ""]
+    const fullDescription = [
+      description,
+      why_saving ? `Why saving: ${why_saving}` : "",
+      when_to_use ? `When to use: ${when_to_use}` : "",
+    ]
       .filter(Boolean)
       .join("\n");
 
