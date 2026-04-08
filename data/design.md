@@ -28,3 +28,13 @@ description: UI/UX design inspiration, patterns, and references
 - **Tags:** #motion #prompts
 - **Added:** 2026-04-08
 
+## SaaS Dashboards
+
+### Linear App: Dark SaaS Dashboard
+- **Link:** https://linear.app
+- **Tags:** #dark-mode #dashboard #saas-ui #hierarchy #components
+- **Description:** Project management dashboard featuring a cohesive dark theme with excellent contrast, information hierarchy, and component consistency across complex workflows.
+Why saving: Master class in dark mode dashboard design: effective use of neutral grays, accent colors for status/priority, subtle shadows for depth, dense yet scannable layout, and consistent interaction patterns throughout.
+When to use: When designing dark-themed dashboards, planning information architecture for tool-heavy interfaces, or establishing component system patterns for productivity apps.
+- **Added:** 2026-04-08
+
