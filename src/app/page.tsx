@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
-import { signOut } from "next-auth/react";
+import { useState, useMemo, useCallback, useEffect } from "react";
+import { signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Filter, LogOut, Settings } from "lucide-react";
 import Link from "next/link";
@@ -17,6 +18,15 @@ import CardModal from "@/components/CardModal";
 import Skeleton from "@/components/Skeleton";
 
 export default function Home() {
+  const { data: session, status: sessionStatus } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (sessionStatus === "unauthenticated") {
+      router.replace("/login");
+    }
+  }, [sessionStatus, router]);
+
   const { isLoading, isReady, isNotInstalled, isNeedsRepo } = useOnboard();
   const { items, folders, isLoading: itemsLoading, mutate } = useItems();
 
@@ -103,6 +113,14 @@ export default function Home() {
     setSearchQuery("");
     setVisibleCount(12);
   }, []);
+
+  if (sessionStatus === "loading" || sessionStatus === "unauthenticated") {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-5 h-5 border-2 border-stone-300 border-t-stone-600 rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
