@@ -33,7 +33,7 @@ export default function SettingsPage() {
     <div className="min-h-screen bg-background">
       <div className="max-w-lg mx-auto px-6 py-12">
         <Link
-          href="/"
+          href={session?.githubUsername ? `/${session.githubUsername}` : "/"}
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -114,7 +114,7 @@ export default function SettingsPage() {
               <MessageSquare className="w-4 h-4 text-stone-600" />
             </div>
             <div>
-              <h2 className="font-semibold text-sm">Claude Desktop</h2>
+              <h2 className="font-semibold text-sm">MCP connector for Claude Desktop</h2>
               <p className="text-xs text-muted-foreground">Save and search via natural conversation</p>
             </div>
           </div>

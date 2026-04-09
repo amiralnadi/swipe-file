@@ -130,9 +130,24 @@ export default function Sidebar({
           </nav>
 
           {/* Footer */}
-          <div className="px-5 py-4 border-t border-border">
-            <p className="text-[10px] text-muted leading-relaxed">
-              Tip: Add items via Claude Code by editing the <code className="bg-stone-100 px-1 rounded">data/</code> folder.
+          <div className="px-5 py-4 border-t border-border space-y-3">
+            <div>
+              <p className="text-[10px] font-semibold text-muted uppercase tracking-widest mb-1.5">Claude commands</p>
+              <div className="space-y-1">
+                <code className="block text-[10px] text-muted-foreground bg-stone-50 px-2 py-1 rounded-lg">/myswipe add [url]</code>
+                <code className="block text-[10px] text-muted-foreground bg-stone-50 px-2 py-1 rounded-lg">/myswipe check</code>
+              </div>
+            </div>
+            <p className="text-[10px] text-muted">
+              built by{" "}
+              <a
+                href="https://x.com/amiralnadi"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-foreground transition-colors underline underline-offset-2"
+              >
+                Amir Alnadi
+              </a>
             </p>
           </div>
         </div>
