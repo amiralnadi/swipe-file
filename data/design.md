@@ -34,7 +34,13 @@ description: UI/UX design inspiration, patterns, and references
 - **Link:** https://linear.app
 - **Tags:** #dark-mode #dashboard #saas-ui #hierarchy #components
 - **Description:** Project management dashboard featuring a cohesive dark theme with excellent contrast, information hierarchy, and component consistency across complex workflows.
-Why saving: Master class in dark mode dashboard design: effective use of neutral grays, accent colors for status/priority, subtle shadows for depth, dense yet scannable layout, and consistent interaction patterns throughout.
-When to use: When designing dark-themed dashboards, planning information architecture for tool-heavy interfaces, or establishing component system patterns for productivity apps.
 - **Added:** 2026-04-08
+
+## Animations
+
+### Scroll animation 2 frames
+- **Link:** https://www.instagram.com/reel/DW7lN7sj2ow/?igsh=bzB6a2gyOHloa2J6
+- **Tags:** #scroll #tutorial
+- **Description:** nice animated scroll effect for landing pages and other websites. Especially if there's a physical product to showcase
+- **Added:** 2026-04-10
 
