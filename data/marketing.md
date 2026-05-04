@@ -16,9 +16,17 @@ description: Marketing references, campaigns, and inspiration
 
 ### Affiliate Network — Creator Monetization Platform
 - **Link:** https://affiliatenetwork.com/
-- **Tags:** #UGC platform #pay-per-view #US
+- **Tags:** #UGC #pay-per-view #US
 - **Description:** An affiliate network connecting creators with monetization opportunities. Global platform trusted by thousands of creators.
-Why saving: Cost-effective platform for launching creator campaigns with strong US market presence at low CPM rates ($1-5).
-When to use: When launching creator affiliate campaigns, monetizing UGC creators, finding low-cost performance marketing channels.
 - **Added:** 2026-04-08
+
+## TikTok Growth
+
+### US TikTok Account Setup Playbook
+- **Link:** https://x.com/jogicodes/status/2051334114809373160
+- **Tags:** #tiktok #growth #gtm #testing #proxy
+- **Description:** Step-by-step guide for creating authentic-looking US TikTok accounts using used iPhones, residential proxies, and proper device fingerprinting to avoid detection.
+Why saving: Demonstrates precise, repeatable systems thinking for scaling on TikTok. Shows how to manage account risk (proxy setup, device selection, warmup period) and validation signals (content reception testing). Useful for anyone building viral mechanics or testing GTM across geographic markets.
+When to use: Planning TikTok-first launches, testing product-market fit before main audience, or building regional accounts for market testing without API rate limits or account bans.
+- **Added:** 2026-05-04
 
