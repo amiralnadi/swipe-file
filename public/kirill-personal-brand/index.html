@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>INTERGALACTIC TV — Kirill Strategy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #000;
+      --surface: #111;
+      --surface2: #1a1a1a;
+      --accent: #2979FF;
+      --glow: #3BA7FF;
+      --white: #fff;
+      --gray: #6B7280;
+      --muted: #374151;
+      --green: #22C55E;
+      --purple: #8B5CF6;
+      --orange: #F59E0B;
+      --red: #EF4444;
+      --mono: 'DM Mono', monospace;
+      --ui: 'Inter', sans-serif;
+      --r: 8px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--white); font-family: var(--mono); overflow-x: hidden; }
+
+    /* PROGRESS */
+    #prog {
+      position: fixed; top: 0; left: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--glow));
+      width: 0; z-index: 100; box-shadow: 0 0 10px var(--glow);
+      transition: width .08s linear;
+    }
+
+    /* CHANNEL TAG */
+    #ch {
+      position: fixed; top: 20px; right: 24px; z-index: 99;
+      font-family: var(--mono); font-size: 11px; color: var(--gray);
+      letter-spacing: .12em; display: flex; align-items: center; gap: 8px;
+    }
+    #ch .dot {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--green);
+      animation: pdot 1.5s ease-in-out infinite;
+    }
+    @keyframes pdot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.3;transform:scale(.7)} }
+
+    /* SECTIONS */
+    section { min-height: 100vh; padding: 90px 24px; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; }
+    .inner { max-width: 900px; margin: 0 auto; width: 100%; }
+
+    /* REVEAL */
+    .r { opacity: 0; transform: translateY(20px); transition: opacity .6s ease, transform .6s ease; }
+    .r.on { opacity: 1; transform: none; }
+    .d1{transition-delay:.1s} .d2{transition-delay:.2s} .d3{transition-delay:.3s}
+    .d4{transition-delay:.4s} .d5{transition-delay:.5s}
+
+    /* SCAN LINES */
+    .scan::after {
+      content:''; position:absolute; inset:0; pointer-events:none; z-index:1;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.06) 2px, rgba(0,0,0,.06) 4px);
+    }
+
+    /* LABEL */
+    .lbl {
+      font-family: var(--mono); font-size: 11px; letter-spacing: .18em;
+      color: var(--gray); text-transform: uppercase; margin-bottom: 20px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .lbl::before { content:''; display:block; width:20px; height:1px; background:var(--gray); }
+
+    /* SECTION TITLE */
+    .stitle {
+      font-family: var(--ui); font-size: clamp(28px,4.5vw,48px);
+      font-weight: 900; letter-spacing: -.02em; line-height: 1.1; margin-bottom: 14px;
+    }
+    .stitle .a { color: var(--accent); }
+    .ssub { font-family: var(--mono); font-size: 13px; color: var(--gray); line-height: 1.7; max-width: 480px; }
+
+    /* ─── HERO ─────────────────────────────────── */
+    #hero {
+      background: #000; align-items: center; justify-content: center;
+      text-align: center;
+    }
+    .hero-ch {
+      position: absolute; top: 24px; left: 24px;
+      font-family: var(--mono); font-size: 11px; color: var(--gray); letter-spacing: .12em;
+    }
+    .sbadge {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--mono); font-size: 11px; letter-spacing: .18em; color: var(--green);
+      border: 1px solid var(--green); padding: 6px 14px; border-radius: 2px;
+      margin-bottom: 40px; animation: sblink 2s ease-in-out infinite;
+    }
+    .sbadge .sd { width:5px; height:5px; border-radius:50%; background:var(--green); animation: pdot 1s ease-in-out infinite; }
+    @keyframes sblink { 0%,100%{opacity:1} 50%{opacity:.65} }
+
+    .htitle {
+      font-family: var(--ui); font-size: clamp(36px,8vw,88px);
+      font-weight: 900; line-height: 1; letter-spacing: -.025em; margin-bottom: 16px;
+      position: relative;
+    }
+    .glitch { position: relative; display: inline-block; }
+    .glitch::before, .glitch::after {
+      content: attr(data-text); position: absolute; top:0; left:0; width:100%; height:100%;
+    }
+    .glitch::before { color: var(--accent); animation: g1 4s infinite; clip-path: polygon(0 0,100% 0,100% 35%,0 35%); }
+    .glitch::after  { color: var(--red);    animation: g2 4s infinite; clip-path: polygon(0 65%,100% 65%,100% 100%,0 100%); }
+    @keyframes g1 { 0%,88%,100%{transform:none;opacity:0} 90%{transform:translate(-3px,1px);opacity:.8} 93%{transform:translate(3px,-1px);opacity:.8} 95%{opacity:0} }
+    @keyframes g2 { 0%,82%,100%{transform:none;opacity:0} 84%{transform:translate(3px,2px);opacity:.6} 87%{transform:translate(-2px,-1px);opacity:.6} 89%{opacity:0} }
+
+    .hsub { font-family: var(--mono); font-size: clamp(11px,1.5vw,14px); color: var(--gray); letter-spacing: .12em; margin-bottom: 52px; }
+
+    .scroll-hint { display:flex; flex-direction:column; align-items:center; gap:8px; color:var(--gray); font-family:var(--mono); font-size:11px; letter-spacing:.15em; animation: flt 2s ease-in-out infinite; }
+    .scroll-hint .arr { width:1px; height:36px; background: linear-gradient(to bottom, transparent, var(--gray)); }
+    @keyframes flt { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
+
+    /* ─── SITUATION ─────────────────────────────── */
+    #situation { background: var(--bg); min-height: auto; padding: 100px 24px; }
+
+    .scards { display: grid; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); gap: 16px; margin-top: 40px; }
+    .sc {
+      background: var(--surface); border: 1px solid var(--muted);
+      border-radius: var(--r); padding: 28px; position: relative; overflow: hidden;
+      transition: border-color .3s, transform .3s, box-shadow .3s;
+    }
+    .sc:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 0 30px rgba(41,121,255,.12); }
+    .sc::before { content:''; position:absolute; top:0;left:0;right:0;height:2px; background:linear-gradient(90deg,var(--accent),transparent); opacity:0; transition:opacity .3s; }
+    .sc:hover::before { opacity:1; }
+    .scnum { font-family:var(--mono); font-size:11px; color:var(--accent); letter-spacing:.15em; margin-bottom:14px; }
+    .sctitle { font-family:var(--ui); font-size:17px; font-weight:700; line-height:1.3; margin-bottom:10px; }
+    .scbody { font-family:var(--mono); font-size:12px; color:var(--gray); line-height:1.75; }
+    .scbody strong { color: var(--white); font-weight:500; }
+
+    /* ─── TERRITORY ─────────────────────────────── */
+    #territory { background: var(--surface); min-height: auto; padding: 100px 24px; }
+
+    .tgrid { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; margin: 40px 0; }
+    .tc { border:1px solid var(--muted); border-radius:var(--r); padding:20px; position:relative; }
+    .tc.taken { opacity:.45; }
+    .tc.open { border-color:var(--accent); background:rgba(41,121,255,.05); animation: tpulse 2.5s ease-in-out infinite; }
+    @keyframes tpulse { 0%,100%{box-shadow:0 0 0 0 rgba(41,121,255,0)} 50%{box-shadow:0 0 22px rgba(41,121,255,.22)} }
+    .tcname { font-family:var(--ui); font-weight:700; font-size:14px; margin-bottom:5px; }
+    .tcclaim { font-family:var(--mono); font-size:11px; color:var(--gray); }
+    .tcstatus { position:absolute; top:12px; right:12px; font-family:var(--mono); font-size:9px; letter-spacing:.1em; }
+    .tcstatus.taken { color:var(--gray); }
+    .tcstatus.open { color:var(--accent); animation: sblink 1.2s ease-in-out infinite; }
+
+    .tcallout { padding:32px; border:1px solid var(--accent); border-radius:var(--r); background:rgba(41,121,255,.04); text-align:center; }
+    .tcallout h3 { font-family:var(--ui); font-size:clamp(18px,3vw,30px); font-weight:800; letter-spacing:-.01em; line-height:1.3; }
+    .tcallout h3 span { color:var(--accent); }
+    .tcallout p { margin-top:12px; font-family:var(--mono); font-size:12px; color:var(--gray); }
+
+    /* ─── KIRILL ────────────────────────────────── */
+    #kirill { background: var(--bg); min-height: auto; padding: 100px 24px; }
+
+    .tl { position:relative; margin: 48px 0 32px; }
+    .tl-line { position:absolute; left:0; top:22px; width:100%; height:1px; background:var(--muted); }
+    .tl-prog { height:100%; background:linear-gradient(90deg,var(--accent),var(--glow)); width:0; transition:width 1.6s ease; box-shadow:0 0 8px var(--accent); }
+    .tl-items { display:flex; gap:0; overflow-x:auto; padding-bottom:20px; scrollbar-width:none; -ms-overflow-style:none; position:relative; z-index:1; }
+    .tl-items::-webkit-scrollbar { display:none; }
+    .tl-item { flex:0 0 auto; min-width:155px; padding-right:20px; }
+    .tl-dot { width:12px; height:12px; border-radius:50%; background:var(--muted); border:2px solid var(--bg); margin-bottom:18px; transition:background .3s,box-shadow .3s; }
+    .tl-item.on .tl-dot { background:var(--accent); box-shadow:0 0 12px var(--accent); }
+    .tl-age { font-family:var(--mono); font-size:10px; color:var(--accent); letter-spacing:.1em; margin-bottom:5px; }
+    .tl-ev { font-family:var(--ui); font-size:13px; font-weight:600; line-height:1.35; }
+
+    .chips { display:flex; flex-wrap:wrap; gap:9px; margin: 32px 0; }
+    .chip { font-family:var(--mono); font-size:12px; padding:6px 14px; border:1px solid var(--muted); border-radius:100px; color:var(--gray); transition:all .25s; cursor:default; }
+    .chip:hover { border-color:var(--white); color:var(--white); }
+    .chip.hl { border-color:var(--accent); color:var(--accent); }
+
+    .dout { padding:28px 32px; background:var(--surface); border-left:3px solid var(--accent); border-radius:0 var(--r) var(--r) 0; margin-top:8px; }
+    .dout .dlbl { font-family:var(--mono); font-size:10px; letter-spacing:.2em; color:var(--accent); margin-bottom:14px; }
+    .dout blockquote { font-family:var(--ui); font-size:clamp(15px,2.2vw,20px); font-weight:600; line-height:1.55; }
+    .dout .daud { margin-top:14px; font-family:var(--mono); font-size:11px; color:var(--gray); line-height:1.6; }
+
+    /* ─── BIG IDEA ──────────────────────────────── */
+    #bigidea {
+      background: var(--bg); text-align:center; align-items:center;
+      min-height: 100vh; padding: 100px 24px;
+    }
+    .biglow { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:650px; height:650px; background:radial-gradient(circle, rgba(41,121,255,.11) 0%, transparent 68%); pointer-events:none; }
+    .bi-inner { position:relative; z-index:2; max-width:800px; margin:0 auto; }
+    .bititle { font-family:var(--ui); font-size:clamp(38px,7.5vw,84px); font-weight:900; letter-spacing:-.025em; line-height:1; margin-bottom:36px; }
+    .bititle .a { color:var(--accent); }
+    .bidef { max-width:540px; margin:0 auto 36px; }
+    .bidef p { font-family:var(--mono); font-size:13px; color:var(--gray); line-height:1.85; margin-bottom:10px; }
+    .bidef p strong { color:var(--white); font-weight:500; }
+    .enemy { display:inline-block; font-family:var(--mono); font-size:12px; letter-spacing:.18em; color:var(--red); border:1px solid rgba(239,68,68,.3); padding:10px 24px; border-radius:2px; }
+
+    /* ─── CONTENT UNIVERSE ──────────────────────── */
+    #universe { background:var(--surface); min-height:auto; padding:100px 24px; }
+
+    .pgrid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:44px; }
+    @media(max-width:580px){ .pgrid{ grid-template-columns:1fr; } }
+
+    .pc {
+      background:var(--bg); border:1px solid var(--muted); border-radius:var(--r);
+      padding:28px; cursor:pointer; position:relative; overflow:hidden;
+      transition:border-color .3s,box-shadow .3s;
+    }
+    .pc::before { content:''; position:absolute; top:0;left:0;width:100%;height:3px; border-radius:var(--r) var(--r) 0 0; }
+    .pc[data-p="see"]::before   { background:#2979FF; }
+    .pc[data-p="think"]::before { background:#8B5CF6; }
+    .pc[data-p="build"]::before { background:#22C55E; }
+    .pc[data-p="own"]::before   { background:#F59E0B; }
+    .pc[data-p="see"]:hover,   .pc[data-p="see"].on   { border-color:#2979FF; box-shadow:0 0 28px rgba(41,121,255,.1); }
+    .pc[data-p="think"]:hover, .pc[data-p="think"].on { border-color:#8B5CF6; box-shadow:0 0 28px rgba(139,92,246,.1); }
+    .pc[data-p="build"]:hover, .pc[data-p="build"].on { border-color:#22C55E; box-shadow:0 0 28px rgba(34,197,94,.1); }
+    .pc[data-p="own"]:hover,   .pc[data-p="own"].on   { border-color:#F59E0B; box-shadow:0 0 28px rgba(245,158,11,.1); }
+
+    .ph { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+    .pname { font-family:var(--ui); font-size:26px; font-weight:900; letter-spacing:-.01em; }
+    .pc[data-p="see"]   .pname { color:#2979FF; }
+    .pc[data-p="think"] .pname { color:#8B5CF6; }
+    .pc[data-p="build"] .pname { color:#22C55E; }
+    .pc[data-p="own"]   .pname { color:#F59E0B; }
+    .ptog { font-size:20px; color:var(--gray); line-height:1; transition:transform .3s,color .3s; }
+    .pc.on .ptog { transform:rotate(45deg); color:var(--white); }
+    .pdesc { font-family:var(--mono); font-size:12px; color:var(--gray); line-height:1.65; }
+
+    .pexp { max-height:0; overflow:hidden; opacity:0; transition:max-height .5s ease,opacity .4s ease; }
+    .pc.on .pexp { max-height:700px; opacity:1; }
+
+    .prubs { margin-top:18px; display:flex; flex-direction:column; gap:14px; }
+    .rub { padding:14px; background:rgba(255,255,255,.03); border-radius:4px; border:1px solid rgba(255,255,255,.05); }
+    .rname { font-family:var(--ui); font-size:13px; font-weight:600; margin-bottom:8px; }
+    .rang { font-family:var(--mono); font-size:11px; color:var(--gray); padding-left:14px; position:relative; line-height:1.55; margin-bottom:3px; }
+    .rang::before { content:'→'; position:absolute; left:0; color:var(--accent); font-size:10px; }
+
+
+    /* ─── FORMATS V2 — FULL SCREEN ──────────────── */
+    #formats { background:var(--bg); padding:100px 0 0; min-height:auto; }
+    .fhdr { max-width:900px; margin:0 auto 48px; padding:0 24px; }
+
+    .ftabs-wrap { position:sticky;top:0;z-index:50;background:rgba(0,0,0,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--muted); }
+    .ftabs { display:flex;overflow-x:auto;padding:0 24px;scrollbar-width:none;max-width:1200px;margin:0 auto; }
+    .ftabs::-webkit-scrollbar { display:none; }
+    .ftab { flex:0 0 auto;font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--gray);padding:14px 20px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .2s,border-color .2s;white-space:nowrap; }
+    .ftab:hover { color:var(--white); }
+    .ftab.on { color:var(--white);border-bottom-color:var(--accent); }
+
+    .fstages { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+    .fstage { display:none; }
+    .fstage.on { display:flex; align-items:center; gap:52px; padding:40px 0; }
+
+    .fs-visual { flex:0 0 auto; aspect-ratio:9/16; max-height:54vh; min-height:300px; position:relative; background:var(--surface); overflow:hidden; border-radius:8px; }
+    .fs-visual video,.fs-visual img { width:100%;height:100%;object-fit:cover; }
+    .fs-visual-ov { display:none; }
+    .fs-ph { position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:100px;opacity:.08;pointer-events:none; }
+
+    .fs-info { flex:1; min-width:0; display:flex;flex-direction:column;justify-content:center; }
+    .fs-num { font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.2em;margin-bottom:20px; }
+    .fs-name { font-family:var(--ui);font-size:clamp(28px,3.5vw,48px);font-weight:900;letter-spacing:-.02em;line-height:1.1;margin-bottom:20px; }
+    .fs-desc { font-family:var(--mono);font-size:13px;color:var(--gray);line-height:1.8;margin-bottom:28px;max-width:400px; }
+    .fs-tags { display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px; }
+    .fs-tag { font-family:var(--mono);font-size:11px;color:var(--accent);border:1px solid rgba(41,121,255,.4);padding:5px 12px;border-radius:2px; }
+    .fs-why { font-family:var(--mono);font-size:12px;color:var(--muted);line-height:1.7;border-left:2px solid var(--muted);padding-left:14px;max-width:380px; }
+
+    @media(max-width:768px){
+      .fstage.on { flex-direction:column; padding:24px; gap:24px; }
+      .fs-visual { max-height:45vh; width:auto; }
+      .fs-info { padding:0; }
+    }
+
+    /* ─── OUTRO ─────────────────────────────────── */
+    #outro { background:var(--bg); min-height:70vh; align-items:center; justify-content:center; text-align:center; }
+    .static { position:absolute;inset:0;pointer-events:none;opacity:.5;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.07'/%3E%3C/svg%3E");
+      background-size:180px; animation:staticmv .4s steps(3) infinite;
+    }
+    @keyframes staticmv { 0%{background-position:0 0} 33%{background-position:40px 20px} 66%{background-position:-20px 40px} 100%{background-position:0 0} }
+    .outro-in { position:relative;z-index:2; }
+    .otitle { font-family:var(--mono);font-size:clamp(18px,4vw,36px);letter-spacing:.3em;color:var(--gray);margin-bottom:20px; }
+    .osig { font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.2em;margin-bottom:48px; }
+
+    .cklist { text-align:left;max-width:380px;margin:0 auto; }
+    .cklbl { font-family:var(--mono);font-size:10px;color:var(--gray);letter-spacing:.2em;text-transform:uppercase;margin-bottom:18px; }
+    .cki { display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;cursor:pointer; }
+    .ckb { width:18px;height:18px;border:1px solid var(--muted);border-radius:2px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .2s; }
+    .ckb.on { border-color:var(--green);background:rgba(34,197,94,.1); }
+    .ckb.on::after { content:'✓';font-size:11px;color:var(--green);line-height:1; }
+    .ckt { font-family:var(--mono);font-size:13px;color:var(--gray);line-height:1.5; }
+    .cki.on .ckt { color:var(--muted);text-decoration:line-through; }
+
+    @media(max-width:480px){ section{padding:60px 16px;} }
+
+    /* ─── READABILITY BOOST ─────────────────────── */
+    .ssub      { font-size: 16px; max-width: 560px; }
+    .scbody    { font-size: 15px; line-height: 1.85; }
+    .sctitle   { font-size: 20px; }
+    .tcclaim   { font-size: 14px; }
+    .tcallout p{ font-size: 15px; }
+    .tl-age    { font-size: 12px; }
+    .tl-ev     { font-size: 15px; }
+    .chip      { font-size: 13px; padding: 7px 16px; }
+    .daud      { font-size: 13px; line-height: 1.7; }
+    .bidef p   { font-size: 16px; line-height: 1.9; }
+    .pdesc     { font-size: 15px; line-height: 1.75; }
+    .rname     { font-size: 15px; margin-bottom: 10px; }
+    .rang      { font-size: 13px; line-height: 1.65; margin-bottom:5px; }
+    .fs-desc   { font-size: 15px; line-height: 1.9; }
+    .fs-why    { font-size: 14px; line-height: 1.8; }
+    .ckt       { font-size: 15px; }
+    .ftab      { font-size: 12px; }
+    .fs-tag    { font-size: 12px; padding: 6px 14px; }
+    .fs-num    { font-size: 12px; }
+  </style>
+</head>
+<body>
+
+<div id="prog"></div>
+<div id="ch"><div class="dot"></div><span id="chlabel">CH-01 · SIGNAL</span></div>
+
+<!-- ══ 1. HERO ═══════════════════════════════════ -->
+<section id="hero" class="scan">
+  <div class="hero-ch">INTERGALACTIC TV · 2026</div>
+  <div style="position:relative;z-index:2;text-align:center;">
+    <div class="sbadge"><div class="sd"></div>SIGNAL ACQUIRED</div>
+    <h1 class="htitle">
+      <span class="glitch" data-text="SELFMAXXING">SELFMAXXING</span><br>STRATEGY
+    </h1>
+    <p class="hsub">KIRILL · CONTENT BRIEF v1.0 · CLASSIFIED</p>
+    <div class="scroll-hint">SCROLL TO RECEIVE<div class="arr"></div></div>
+  </div>
+</section>
+
+<!-- ══ 2. SITUATION ══════════════════════════════ -->
+<section id="situation">
+  <div class="inner">
+    <div class="lbl r">TRANSMISSION 01 · SITUATION</div>
+    <h2 class="stitle r d1">The market explained<br>in <span class="a">3 signals.</span></h2>
+    <p class="ssub r d2">What's happening and why right now is the perfect moment.</p>
+    <div class="scards" style="margin-top:40px;">
+      <div class="sc r d2">
+        <div class="scnum">SIG-01</div>
+        <div class="sctitle">Gen Z follows belief systems</div>
+        <div class="scbody">Not content — a <strong>system of values.</strong> Opinion leaders, not experts, own attention.</div>
+      </div>
+      <div class="sc r d3">
+        <div class="scnum">SIG-02</div>
+        <div class="sctitle">AI is flooding the internet with noise</div>
+        <div class="scbody">Content became cheap and identical. <strong>Originality and humanity</strong> are the new scarcity.</div>
+      </div>
+      <div class="sc r d4">
+        <div class="scnum">SIG-03</div>
+        <div class="sctitle">The reaction is already building</div>
+        <div class="scbody"><strong>Authenticity, raw delivery, unpopular opinions</strong> outperform polished content. The timing is perfect.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 3. TERRITORY ══════════════════════════════ -->
+<section id="territory">
+  <div class="inner">
+    <div class="lbl r">TRANSMISSION 02 · LANDSCAPE</div>
+    <h2 class="stitle r d1">Gen Z needs a voice for<br><span class="a">the AI era.</span> Nobody has it yet.</h2>
+    <p class="ssub r d2">Every dominant narrative belongs to the wrong era. The gap is real — and Kirill is the only one with the right story to fill it.</p>
+    <div class="tgrid r d2">
+      <div class="tc taken"><div class="tcstatus taken">TAKEN</div><div class="tcname">Tate</div><div class="tcclaim">Toxic masculinity</div></div>
+      <div class="tc taken"><div class="tcstatus taken">TAKEN</div><div class="tcname">Clavicular</div><div class="tcclaim">Looks + discipline</div></div>
+      <div class="tc taken"><div class="tcstatus taken">TAKEN</div><div class="tcname">Roy / Cluely</div><div class="tcclaim">Hustle for founders</div></div>
+      <div class="tc taken"><div class="tcstatus taken">TAKEN</div><div class="tcname">Sneako</div><div class="tcclaim">Right lifestyle</div></div>
+      <div class="tc open"><div class="tcstatus open">OPEN ▶</div><div class="tcname">Kirill</div><div class="tcclaim">Selfmaxxing — uniqueness in the AI age</div></div>
+    </div>
+    <div class="tcallout r d3">
+      <h3>Gen Z is looking for a <span>belief system</span> for the AI age. Nobody is giving them one <span>from lived experience.</span></h3>
+      <p>Kirill lived it before anyone else started talking about it.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 4. KIRILL ═════════════════════════════════ -->
+<section id="kirill">
+  <div class="inner">
+    <div class="lbl r">TRANSMISSION 03 · SUBJECT</div>
+    <h2 class="stitle r d1">Kirill isn't a biography.<br><span class="a">It's a pattern.</span></h2>
+    <div class="tl r d2">
+      <div class="tl-line"><div class="tl-prog" id="tlprog"></div></div>
+      <div class="tl-items">
+        <div class="tl-item" id="t0"><div class="tl-dot"></div><div class="tl-age">AGE 12</div><div class="tl-ev">Cracked CAPTCHA using ML</div></div>
+        <div class="tl-item" id="t1"><div class="tl-dot"></div><div class="tl-age">AGE 14</div><div class="tl-ev">Youngest employee at VK</div></div>
+        <div class="tl-item" id="t2"><div class="tl-dot"></div><div class="tl-age">~16</div><div class="tl-ev">Dropped school. Went his own way</div></div>
+        <div class="tl-item" id="t3"><div class="tl-dot"></div><div class="tl-age">~20</div><div class="tl-ev">Multiple startups before 22</div></div>
+        <div class="tl-item" id="t4"><div class="tl-dot"></div><div class="tl-age">22</div><div class="tl-ev">Y Combinator</div></div>
+        <div class="tl-item" id="t5"><div class="tl-dot"></div><div class="tl-age">NOW</div><div class="tl-ev">Alien — privacy tech for the post-AGI world</div></div>
+      </div>
+    </div>
+    <div class="chips r d3">
+      <div class="chip hl">extraordinary</div>
+      <div class="chip hl">open-minded</div>
+      <div class="chip">hunts unique experiences</div>
+      <div class="chip hl">creates, doesn't copy</div>
+      <div class="chip">privacy tech</div>
+      <div class="chip">Y Combinator</div>
+      <div class="chip hl">lives by his own rules</div>
+      <div class="chip">post-AGI vision</div>
+    </div>
+    <div class="dout r d4">
+      <div class="dlbl">TARGET AUDIENCE DREAM OUTCOME</div>
+      <blockquote>"Wake up and decide what you work on today. Nobody can replace you — because what you create is yours alone."</blockquote>
+      <p class="daud">18–28 · Gen Z · Feel the rules are changing but nobody explains the new ones · Looking for a belief system, not life hacks</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 5. BIG IDEA ═══════════════════════════════ -->
+<section id="bigidea">
+  <div class="biglow"></div>
+  <div class="bi-inner inner">
+    <div class="lbl r" style="justify-content:center;">TRANSMISSION 04 · BIG IDEA</div>
+    <div class="bititle r d1"><span class="a">SELFMAXXING</span><br>IS THE NEW BLACK</div>
+    <div class="bidef">
+      <p class="r d2">Robots will solve poverty, mortality, looks. Looksmaxxing and hustle culture <strong>will die from irrelevance.</strong></p>
+      <p class="r d3">Status will be defined by <strong>authenticity, uniqueness, and independence.</strong> That era is coming fast.</p>
+      <p class="r d4">Selfmaxxing is the system that makes you <strong>maximally unique</strong> in an age where everything else gets averaged out.</p>
+    </div>
+    <div class="r d5"><div class="enemy">ENEMY: FAKENESS · CONFORMITY · MEDIOCRITY</div></div>
+
+  </div>
+</section>
+
+<!-- ══ 6. CONTENT UNIVERSE ═══════════════════════ -->
+<section id="universe">
+  <div class="inner">
+    <div class="lbl r">TRANSMISSION 05 · CONTENT</div>
+    <h2 class="stitle r d1">4 pillars. <span class="a">Infinite</span> content.</h2>
+    <p class="ssub r d2">Click each pillar — see the rubrics and example angles.</p>
+    <div class="pgrid">
+      <!-- SEE -->
+      <div class="pc r d2" data-p="see" onclick="tog(this)">
+        <div class="ph"><div class="pname">SEE</div><div class="ptog">+</div></div>
+        <div class="pdesc">Learn to see how systems work around you: algorithms, data, AI, corporate structures.</div>
+        <div class="pexp"><div class="prubs">
+          <div class="rub">
+            <div class="rname" style="color:#2979FF">🔍 The System You Don't Notice</div>
+            <div class="rang">How the algorithm makes you predictable</div>
+            <div class="rang">What companies know about you from public data</div>
+            <div class="rang">How school prepared you for a world that no longer exists</div>
+          </div>
+          <div class="rub">
+            <div class="rname" style="color:#2979FF">💬 Controversial Truth</div>
+            <div class="rang">Mediocrity used to hide behind effort</div>
+            <div class="rang">Prompt engineering isn't "mastering AI"</div>
+            <div class="rang">Intellectual work is more vulnerable than physical work</div>
+          </div>
+        </div></div>
+      </div>
+      <!-- THINK -->
+      <div class="pc r d3" data-p="think" onclick="tog(this)">
+        <div class="ph"><div class="pname">THINK</div><div class="ptog">+</div></div>
+        <div class="pdesc">Develop your own point of view. Primary sources over borrowed conclusions. Opinions you can defend.</div>
+        <div class="pexp"><div class="prubs">
+          <div class="rub">
+            <div class="rname" style="color:#8B5CF6">💬 Controversial Truth</div>
+            <div class="rang">Most people don't know what's unique about them — there was never a reason to find out</div>
+            <div class="rang">People who consume the same content think the same way</div>
+            <div class="rang">Hustle culture was about the system, not about you</div>
+          </div>
+          <div class="rub">
+            <div class="rname" style="color:#8B5CF6">🧠 Belief Autopsy</div>
+            <div class="rang">"Learn for life" — where did it come from, does it still work?</div>
+            <div class="rang">"Follow your passion" — relevant now?</div>
+            <div class="rang">"A degree opens doors" — is that still true?</div>
+          </div>
+        </div></div>
+      </div>
+      <!-- BUILD -->
+      <div class="pc r d3" data-p="build" onclick="tog(this)">
+        <div class="ph"><div class="pname">BUILD</div><div class="ptog">+</div></div>
+        <div class="pdesc">Create something yours. An idea, a product, an audience. Don't work for others — build your own.</div>
+        <div class="pexp"><div class="prubs">
+          <div class="rub">
+            <div class="rname" style="color:#22C55E">📊 Before / After</div>
+            <div class="rang">What a portfolio means now vs 10 years ago</div>
+            <div class="rang">How reputation is built when content is free</div>
+            <div class="rang">What counts as an achievement when AI does the same faster</div>
+          </div>
+          <div class="rub">
+            <div class="rname" style="color:#22C55E">📁 Selfmaxxing Field Report</div>
+            <div class="rang">A founder building on someone else's platform</div>
+            <div class="rang">An artist who switched to AI and lost their voice</div>
+            <div class="rang">Someone who built an audience on a single idea</div>
+          </div>
+        </div></div>
+      </div>
+      <!-- OWN -->
+      <div class="pc r d4" data-p="own" onclick="tog(this)">
+        <div class="ph"><div class="pname">OWN</div><div class="ptog">+</div></div>
+        <div class="pdesc">Control your identity in the digital world. Manage what systems know about you. Be irreplaceable.</div>
+        <div class="pexp"><div class="prubs">
+          <div class="rub">
+            <div class="rname" style="color:#F59E0B">🔍 The System You Don't Notice</div>
+            <div class="rang">What happens to your data when you use a free product</div>
+            <div class="rang">How your identity is used without your knowledge</div>
+            <div class="rang">In 10 years, the flex will be what can't be generated</div>
+          </div>
+          <div class="rub">
+            <div class="rname" style="color:#F59E0B">🚨 AI Scam Report</div>
+            <div class="rang">Voice clones — how they work and why they land</div>
+            <div class="rang">Deepfake video calls — real cases</div>
+            <div class="rang">Agents acting under someone else's identity</div>
+          </div>
+        </div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 7. FORMATS ════════════════════════════════ -->
+<section id="formats">
+  <div class="fhdr r">
+    <div class="lbl">TRANSMISSION 06 · FORMATS</div>
+    <h2 class="stitle">4 formats.<br><span class="a">Intergalactic TV.</span></h2>
+    <p class="ssub">This is the core of the strategy. Click a format — see how it looks and why it works.</p>
+  </div>
+
+  <div class="ftabs-wrap">
+    <div class="ftabs">
+      <div class="ftab on"  onclick="switchF(0,this)">01 · INTERGALACTIC TV</div>
+      <div class="ftab"     onclick="switchF(1,this)">02 · INTERCEPTED</div>
+      <div class="ftab"     onclick="switchF(2,this)">03 · ALIEN PODCAST</div>
+      <div class="ftab"     onclick="switchF(3,this)">04 · SIMS SPLIT</div>
+    </div>
+  </div>
+
+  <div class="fstages">
+
+    <!-- FORMAT 01 — INTERGALACTIC TV -->
+    <div class="fstage on">
+      <div class="fs-visual">
+        <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;">
+          <source src="reels-example-news-show-expert.mp4" type="video/mp4">
+          <source src="reels-example-news-show-expert.mp4" type="video/quicktime">
+        </video>
+        <div class="fs-visual-ov"></div>
+        <div class="fs-ph">📺</div>
+      </div>
+      <div class="fs-info">
+        <div class="fs-num">FORMAT 01</div>
+        <div class="fs-name">Intergalactic TV</div>
+        <div class="fs-desc">Kirill as an alien scientist — expert on humans, planet Earth, and the future of technology. Each video is a "broadcast segment" where an off-screen host asks questions and Kirill explains from a position of cosmic authority.</div>
+        <div class="fs-tags">
+          <div class="fs-tag">SEE</div>
+          <div class="fs-tag">OWN</div>
+          <div class="fs-tag">TALKING HEAD</div>
+        </div>
+        <div class="fs-why">Best for: Controversial Truth, The System You Don't Notice. The format gives Kirill natural authority — he's not opining, he's reporting from above.</div>
+      </div>
+    </div>
+
+    <!-- FORMAT 02 — INTERCEPTED TRANSMISSION -->
+    <div class="fstage">
+      <div class="fs-visual">
+        <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;">
+          <source src="reels-transmission.mp4" type="video/mp4">
+        </video>
+        <div class="fs-visual-ov"></div>
+        <div class="fs-ph">📡</div>
+      </div>
+      <div class="fs-info">
+        <div class="fs-num">FORMAT 02</div>
+        <div class="fs-name">Intercepted Transmission</div>
+        <div class="fs-desc">Styled as a hacked or intercepted signal. Glitches, artifacts, scan lines — like this wasn't meant to be seen. Kirill speaks directly, no explanations, as if broadcasting from another point in time.</div>
+        <div class="fs-tags">
+          <div class="fs-tag">SEE</div>
+          <div class="fs-tag">THINK</div>
+          <div class="fs-tag">SHORT-FORM</div>
+        </div>
+        <div class="fs-why">Best for: Controversial Truth. The "forbidden knowledge" framing removes the need to justify the opinion — it feels like a leak, not a take.</div>
+      </div>
+    </div>
+
+    <!-- FORMAT 03 — ALIEN PODCAST -->
+    <div class="fstage">
+      <div class="fs-visual">
+        <img src="reels-example-alien-podcast-clips.png" alt="">
+        <div class="fs-visual-ov"></div>
+        <div class="fs-ph">🎙️</div>
+      </div>
+      <div class="fs-info">
+        <div class="fs-num">FORMAT 03</div>
+        <div class="fs-name">Alien Podcast</div>
+        <div class="fs-desc">Two aliens discussing humanity as an observed species. One is clearly Kirill — almost human. The other is unmistakably extraterrestrial. The contrast is the comedy and the hook.</div>
+        <div class="fs-tags">
+          <div class="fs-tag">THINK</div>
+          <div class="fs-tag">BUILD</div>
+          <div class="fs-tag">DIALOGUE</div>
+        </div>
+        <div class="fs-why">Best for: Belief Autopsy, Selfmaxxing Field Report. The dialogue format lets ideas be challenged and explored — more nuanced than a monologue.</div>
+      </div>
+    </div>
+
+    <!-- FORMAT 04 — SIMS SPLIT -->
+    <div class="fstage">
+      <div class="fs-visual">
+        <img src="reels-example-sims-split.png" alt="">
+        <div class="fs-visual-ov"></div>
+        <div class="fs-ph">🎮</div>
+      </div>
+      <div class="fs-info">
+        <div class="fs-num">FORMAT 04</div>
+        <div class="fs-name">Sims Split Screen</div>
+        <div class="fs-desc">A Sims character represents a human archetype — labeled by stereotype — and walks into predictable failure. Kirill the alien observes and narrates. Comedy through detachment. Analysis through distance.</div>
+        <div class="fs-tags">
+          <div class="fs-tag">BUILD</div>
+          <div class="fs-tag">OWN</div>
+          <div class="fs-tag">STORYTELLING</div>
+        </div>
+        <div class="fs-why">Best for: Selfmaxxing Field Report, AI Scam Report. The game-character framing removes judgment — it's observation, not criticism.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══ 8. OUTRO ══════════════════════════════════ -->
+<section id="outro">
+  <div class="static"></div>
+  <div class="outro-in">
+    <div class="otitle r">TRANSMISSION COMPLETE</div>
+    <div class="osig r d1">INTERGALACTIC TV · SIGNAL LOST · 2026</div>
+    <div class="cklist r d2">
+      <div class="cklbl">NEXT STEPS</div>
+      <div class="cki" onclick="ck(this)"><div class="ckb"></div><div class="ckt">Approve the semantic concept</div></div>
+      <div class="cki" onclick="ck(this)"><div class="ckb"></div><div class="ckt">Approve the creative concept</div></div>
+      <div class="cki" onclick="ck(this)"><div class="ckb"></div><div class="ckt">Approve reel formats</div></div>
+      <div class="cki" onclick="ck(this)"><div class="ckb"></div><div class="ckt">Approve budget</div></div>
+      <div class="cki" onclick="ck(this)"><div class="ckb"></div><div class="ckt">🌍 Start conquering the planet</div></div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Progress bar
+  const prog = document.getElementById('prog');
+  window.addEventListener('scroll', () => {
+    const d = document.documentElement;
+    prog.style.width = (d.scrollTop / (d.scrollHeight - d.clientHeight) * 100) + '%';
+    updateCh();
+  }, {passive:true});
+
+  // Channel label
+  const chlabel = document.getElementById('chlabel');
+  const chs = [
+    ['hero',     'CH-01 · SIGNAL'],
+    ['situation','CH-02 · SITUATION'],
+    ['territory','CH-03 · LANDSCAPE'],
+    ['kirill',   'CH-04 · SUBJECT'],
+    ['bigidea',  'CH-05 · BIG IDEA'],
+    ['universe', 'CH-06 · CONTENT'],
+    ['formats',  'CH-07 · FORMATS'],
+    ['outro',    'CH-08 · END'],
+  ];
+  function updateCh() {
+    const mid = window.scrollY + window.innerHeight * .5;
+    for (let i = chs.length - 1; i >= 0; i--) {
+      const el = document.getElementById(chs[i][0]);
+      if (el && el.offsetTop <= mid) { chlabel.textContent = chs[i][1]; return; }
+    }
+  }
+
+  // Scroll reveal
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); obs.unobserve(e.target); } });
+  }, {threshold:.1, rootMargin:'0px 0px -30px 0px'});
+  document.querySelectorAll('.r').forEach(el => obs.observe(el));
+
+  // Timeline
+  let tlDone = false;
+  const tlObs = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting && !tlDone) {
+      tlDone = true;
+      document.getElementById('tlprog').style.width = '100%';
+      ['t0','t1','t2','t3','t4','t5'].forEach((id,i) => {
+        setTimeout(() => document.getElementById(id)?.classList.add('on'), i * 210);
+      });
+    }
+  }, {threshold:.3});
+  const ks = document.getElementById('kirill');
+  if (ks) tlObs.observe(ks);
+
+  // Pillar toggle
+  function tog(card) {
+    const was = card.classList.contains('on');
+    document.querySelectorAll('.pc').forEach(c => c.classList.remove('on'));
+    if (!was) card.classList.add('on');
+  }
+
+  // Checklist
+  function ck(item) {
+    item.classList.toggle('on');
+    item.querySelector('.ckb').classList.toggle('on');
+  }
+
+  // Format tab switcher
+  function switchF(idx, tab) {
+    document.querySelectorAll('.ftab').forEach(t => t.classList.remove('on'));
+    document.querySelectorAll('.fstage').forEach(s => s.classList.remove('on'));
+    tab.classList.add('on');
+    document.querySelectorAll('.fstage')[idx].classList.add('on');
+    // Pause/play video
+    document.querySelectorAll('.fstage video').forEach(v => v.pause());
+    const activeVideo = document.querySelectorAll('.fstage')[idx].querySelector('video');
+    if (activeVideo) activeVideo.play();
+  }
+</script>
+</body>
+</html>
